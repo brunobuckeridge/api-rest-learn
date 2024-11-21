@@ -1,4 +1,4 @@
-package br.bucker.bits;
+package br.bucker.bits.maths;
 
 public class Matematica {
 

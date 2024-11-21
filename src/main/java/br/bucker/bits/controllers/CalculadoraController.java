@@ -1,9 +1,10 @@
-package br.bucker.bits;
+package br.bucker.bits.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.bucker.bits.maths.Matematica;
 import br.bucker.bits.utils.DoubleUtils;
 
 @RestController
