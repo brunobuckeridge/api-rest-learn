@@ -22,29 +22,29 @@ public class PersonController {
 
 	@Autowired
 	private PersonServices service;
-	
+
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<Person> findAll() throws Exception {
 		return service.findAll();
 	}
-	
+
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Person findById(@PathVariable String id) throws Exception {
+	public Person findById(@PathVariable Long id) throws Exception {
 		return service.findById(id);
 	}
-	
+
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Person create(@RequestBody Person person) throws Exception {
 		return service.create(person);
 	}
-	
+
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Person update(@RequestBody Person person) throws Exception {
 		return service.update(person);
 	}
-	
+
 	@DeleteMapping(value = "/{id}")
-	public void delete(@PathVariable String id) throws Exception {
+	public void delete(@PathVariable Long id) throws Exception {
 		service.delete(id);
 	}
 }

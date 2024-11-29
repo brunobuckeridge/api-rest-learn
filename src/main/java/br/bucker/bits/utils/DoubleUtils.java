@@ -1,6 +1,6 @@
 package br.bucker.bits.utils;
 
-import br.bucker.bits.exceptions.UnsupportedMathOperationException;
+import br.bucker.bits.exceptions.ResourceNotFoundException;
 
 public class DoubleUtils {
 	
@@ -10,7 +10,7 @@ public class DoubleUtils {
 		
 		strNumber = strNumber.replaceAll(",", ".");
 		if (!isNumber(strNumber)) {
-			throw new UnsupportedMathOperationException("Precisam ser numeros para a operação!");
+			throw new ResourceNotFoundException("Precisam ser numeros para a operação!");
 		}
 		
 		return converteDouble(strNumber);

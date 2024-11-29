@@ -3,51 +3,82 @@ package br.bucker.bits.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Person implements Serializable{
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "person")
+public class Person implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column(nullable = false)
+	private Boolean ativo;
+
+	@Column(name = "first_name", nullable = false, length = 80)
 	private String firstName;
+
+	@Column(name = "last_name", nullable = false, length = 80)
 	private String lastName;
+
+	@Column(nullable = false, length = 100)
 	private String adress;
+
+	@Column(nullable = false, length = 6)
 	private String gender;
-	
+
 	public Person() {
-		
+		ativo = true;
 	}
-	
+
 	public Person(Long id, String firstName, String lastName, String adress, String gender) {
 		super();
 		this.id = id;
+		this.ativo = true;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.adress = adress;
 		this.gender = gender;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
-	
+
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
-	
+
 	public String getLastName() {
 		return lastName;
 	}
-	
+
 	public String getAdress() {
 		return adress;
 	}
-	
+
 	public String getGender() {
 		return gender;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
 	}
 
 	public void setFirstName(String firstName) {
@@ -68,9 +99,9 @@ public class Person implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(adress, firstName, gender, id, lastName);
+		return Objects.hash(adress, ativo, firstName, gender, id, lastName);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -80,8 +111,8 @@ public class Person implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Person other = (Person) obj;
-		return Objects.equals(adress, other.adress) && Objects.equals(firstName, other.firstName)
-				&& Objects.equals(gender, other.gender) && Objects.equals(id, other.id)
-				&& Objects.equals(lastName, other.lastName);
+		return Objects.equals(adress, other.adress) && Objects.equals(ativo, other.ativo)
+				&& Objects.equals(firstName, other.firstName) && Objects.equals(gender, other.gender)
+				&& Objects.equals(id, other.id) && Objects.equals(lastName, other.lastName);
 	}
 }
