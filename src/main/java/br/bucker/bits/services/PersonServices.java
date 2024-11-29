@@ -8,42 +8,44 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.bucker.bits.data.vo.v1.PersonVO;
 import br.bucker.bits.exceptions.ResourceNotFoundException;
+import br.bucker.bits.mapper.DozerMapper;
 import br.bucker.bits.model.Person;
 import br.bucker.bits.repository.PersonRepository;
 
 @Service
 public class PersonServices {
 
-	private static final boolean DEBUG = false;
 	private static final boolean PERSISTIDO = true;
 
 	// Mock
+	private static final boolean DEBUG = false;
 	private final AtomicLong counter = new AtomicLong();
-	private static final int NUM_LIST_MOCK = 8;
+	private static final int NUM_LIST_MOCK = 5;
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Autowired
 	private PersonRepository repository;
 
-	public List<Person> findAll() {
+	public List<PersonVO> findAll() {
 		logger.info("Procurando por todos.");
 
 		if (DEBUG) {
-			List<Person> persons = new ArrayList<>();
+			List<PersonVO> persons = new ArrayList<>();
 			populaMockList(persons, NUM_LIST_MOCK);
 			return persons;
 		}
 
-		return repository.findAll().stream().filter(p -> p.getAtivo() == true).toList();
+		return DozerMapper.parseListObjects(repository.findAll().stream().filter(p -> p.getAtivo() == true).toList(), PersonVO.class);
 	}
 
-	public Person findById(Long id) {
+	public PersonVO findById(Long id) {
 		logger.info("Procurando por ID: " + id);
 
 		if (DEBUG) {
-			Person person = new Person();
+			PersonVO person = new PersonVO();
 			populaMock(person, Integer.parseInt(id.toString()));
 			return person;
 		}
@@ -52,27 +54,29 @@ public class PersonServices {
 				.orElseThrow(() -> new ResourceNotFoundException("Sem registro para o ID: " + id));	
 		
 		if (PERSISTIDO) {
-			return entity;			
+			return DozerMapper.parseObject(entity, PersonVO.class);			
 		} else {
 			if (entity.getAtivo()) {
-	            return entity;
+	            return DozerMapper.parseObject(entity, PersonVO.class);
 	        } else {
 	            throw new ResourceNotFoundException("Sem registro para o ID: " + id);
 	        }
 		}
 	}
 
-	public Person create(Person person) {
+	public PersonVO create(PersonVO person) {
 		logger.info("Criando pessoa com ID: " + person.getId());
 		
 		if (DEBUG) {
 			return person;
 		}
-
-		return repository.save(person);
+		
+		Person entity = DozerMapper.parseObject(person, Person.class);
+		
+		return DozerMapper.parseObject(repository.save(entity), PersonVO.class);
 	}
 
-	public Person update(Person person) {
+	public PersonVO update(PersonVO person) {
 		logger.info("Update de pessoa com ID: " + person.getId());
 
 		if (DEBUG) {
@@ -84,10 +88,10 @@ public class PersonServices {
 
 		entity.setFirstName(person.getFirstName());
 		entity.setLastName(person.getLastName());
-		entity.setAdress(person.getAdress());
+		entity.setAddress(person.getAddress());
 		entity.setGender(person.getGender());
 
-		return repository.save(entity);
+		return DozerMapper.parseObject(repository.save(entity), PersonVO.class);
 	}
 	
 	// Em casos onde não é delicado a exclusão dos dados pode ser usado o delete
@@ -111,19 +115,21 @@ public class PersonServices {
 		}
 	}
 
-	private void populaMockList(List<Person> persons, int numeroDeLista) {
-		for (int i = 0; i < numeroDeLista; i++) {
-			Person person = new Person();
+	//Para DEBUG
+	private void populaMockList(List<PersonVO> persons, int numeroDeLista) {
+		for (int i = 1; i <= numeroDeLista; i++) {
+			PersonVO person = new PersonVO();
 			populaMock(person, i);
 			persons.add(person);
 		}
 	}
 
-	private void populaMock(Person person, int i) {
+	//Para DEBUG
+	private void populaMock(PersonVO person, int i) {
 		person.setId(counter.incrementAndGet());
 		person.setFirstName("Aplicação " + i);
 		person.setLastName("Cursando Teste");
-		person.setAdress("Rua Teste, " + i + " - Curitiba, PR");
+		person.setAddress("Rua Teste, " + i + " - Curitiba, PR");
 		person.setGender("Male");
 	}
 }
