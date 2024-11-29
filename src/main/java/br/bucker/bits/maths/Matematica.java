@@ -1,7 +1,9 @@
 package br.bucker.bits.maths;
 
+@Deprecated
 public class Matematica {
 
+	//Usado para estudo, manter classe apenas como algo UTIL. Sem uso nos modulos mais avançados do curso.
 	public Matematica() {
 	}
 
