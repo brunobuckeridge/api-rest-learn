@@ -16,6 +16,7 @@ import br.bucker.bits.repository.PersonRepository;
 public class PersonServices {
 
 	private static final boolean DEBUG = false;
+	private static final boolean PERSISTIDO = true;
 
 	// Mock
 	private final AtomicLong counter = new AtomicLong();
@@ -35,7 +36,7 @@ public class PersonServices {
 			return persons;
 		}
 
-		return repository.findAll();
+		return repository.findAll().stream().filter(p -> p.getAtivo() == true).toList();
 	}
 
 	public Person findById(Long id) {
@@ -47,12 +48,26 @@ public class PersonServices {
 			return person;
 		}
 
-		return repository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Sem registro para o ID: " + id));
+		Person entity = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Sem registro para o ID: " + id));	
+		
+		if (PERSISTIDO) {
+			return entity;			
+		} else {
+			if (entity.getAtivo()) {
+	            return entity;
+	        } else {
+	            throw new ResourceNotFoundException("Sem registro para o ID: " + id);
+	        }
+		}
 	}
 
 	public Person create(Person person) {
 		logger.info("Criando pessoa com ID: " + person.getId());
+		
+		if (DEBUG) {
+			return person;
+		}
 
 		return repository.save(person);
 	}
@@ -60,6 +75,10 @@ public class PersonServices {
 	public Person update(Person person) {
 		logger.info("Update de pessoa com ID: " + person.getId());
 
+		if (DEBUG) {
+			return person;
+		}
+		
 		Person entity = repository.findById(person.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Sem registro para o ID: " + person.getId()));
 
@@ -70,19 +89,26 @@ public class PersonServices {
 
 		return repository.save(entity);
 	}
-
+	
+	// Em casos onde não é delicado a exclusão dos dados pode ser usado o delete
+	// direto. No caso de persistencia de dados não permitindo delete. Usa-se o
+	// campo ATIVO.
 	public void delete(Long id) {
 		logger.info("Deletando pessoa com ID: " + id);
 
+		if (DEBUG) {
+			return;
+		}
+		
 		Person entity = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Sem registro para o ID: " + id));
 
-		// Em casos onde não é delicado a exclusão dos dados pode ser usado o delete
-		// direto. No caso de persistencia de dados não permitindo delete. Usasse o
-		// campo ATIVO.
-		// repository.delete(entity);
-		entity.setAtivo(false);
-		repository.save(entity);
+		if (PERSISTIDO) {
+			entity.setAtivo(false);
+			repository.save(entity);
+		} else {
+			repository.delete(entity);
+		}
 	}
 
 	private void populaMockList(List<Person> persons, int numeroDeLista) {
