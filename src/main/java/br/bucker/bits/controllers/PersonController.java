@@ -18,7 +18,7 @@ import br.bucker.bits.data.vo.v1.PersonVO;
 import br.bucker.bits.services.PersonServices;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/api/person/v1")
 public class PersonController {
 
 	@Autowired
